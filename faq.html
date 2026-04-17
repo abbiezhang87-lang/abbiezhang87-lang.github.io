@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Cards (FAQ Only)</title>
+
+<style>
+body { font-family: Arial; background:#f5f5f5; text-align:center; padding:30px; }
+
+.card {
+  width: 700px;
+  height: 340px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+button { margin:5px; padding:10px 15px; border:none; border-radius:6px; cursor:pointer; }
+input { padding:10px; width:300px; border-radius:6px; border:1px solid #ccc; }
+
+.controls { margin-top:15px; }
+</style>
+</head>
+
+<body>
+
+<h2>FAQ Quiz Cards</h2>
+
+<input placeholder="Search Angular / BQ..." oninput="search(this.value)" />
+
+<div class="card" onclick="flip()" id="card">Loading...</div>
+
+<div class="controls">
+  <button onclick="prev()">⬅ Prev</button>
+  <button onclick="next()">Next ➡</button>
+  <button onclick="shuffle()">🔁 Shuffle</button>
+</div>
+
+<div class="controls">
+  <button onclick="toggleFav()">⭐ Favorite</button>
+  <button onclick="mark('known')">✔ 熟</button>
+  <button onclick="mark('unknown')">❌ 不熟</button>
+</div>
+
+<p id="status"></p>
+
+<script>
+let originalData = [];
+let data = [];
+let index = 0;
+let flipped = false;
+
+// 👉 本地存储
+let favorites = new Set(JSON.parse(localStorage.getItem('fav') || '[]'));
+let stats = JSON.parse(localStorage.getItem('stats') || '{}');
+
+// 🔥 加载你的 faq.json（唯一数据源）
+fetch('faq.json')
+  .then(res => res.json())
+  .then(json => {
+    originalData = json.map(item => ({
+      id: item.id,
+      question: item.question,
+      answer: cleanHTML(item.answer),
+      category: item.category
+    }));
+
+    data = [...originalData];
+    render();
+  });
+
+// 去 HTML 标签
+function cleanHTML(html) {
+  return html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// 渲染
+function render() {
+  if (!data.length) return;
+
+  const card = document.getElementById("card");
+  const cur = data[index];
+
+  card.innerText = flipped ? cur.answer : cur.question;
+
+  document.getElementById("status").innerText =
+    `#${index+1}/${data.length} | ⭐ ${favorites.size} | 熟 ${
+      Object.values(stats).filter(v=>v==='known').length
+    } | 不熟 ${
+      Object.values(stats).filter(v=>v==='unknown').length
+    }`;
+}
+
+// 翻转
+function flip() {
+  flipped = !flipped;
+  render();
+}
+
+// 翻页
+function next() {
+  index = (index + 1) % data.length;
+  flipped = false;
+  render();
+}
+
+function prev() {
+  index = (index - 1 + data.length) % data.length;
+  flipped = false;
+  render();
+}
+
+// ⭐ 收藏
+function toggleFav() {
+  const id = data[index].id;
+  if (favorites.has(id)) favorites.delete(id);
+  else favorites.add(id);
+
+  localStorage.setItem('fav', JSON.stringify([...favorites]));
+  render();
+}
+
+// 📊 标记
+function mark(type) {
+  stats[data[index].id] = type;
+  localStorage.setItem('stats', JSON.stringify(stats));
+  render();
+}
+
+// 🔁 随机
+function shuffle() {
+  data = [...data].sort(() => Math.random() - 0.5);
+  index = 0;
+  flipped = false;
+  render();
+}
+
+// 🔍 搜索（支持 question + category）
+function search(keyword) {
+  keyword = keyword.toLowerCase();
+
+  data = originalData.filter(item =>
+    item.question.toLowerCase().includes(keyword) ||
+    item.category.toLowerCase().includes(keyword)
+  );
+
+  index = 0;
+  flipped = false;
+  render();
+}
+</script>
+
+</body>
+</html>
