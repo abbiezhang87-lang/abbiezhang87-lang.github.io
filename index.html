@@ -2,66 +2,79 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Quiz Cards (FAQ Only)</title>
+<title>Interview Question Bank</title>
 
 <style>
-body { font-family: Arial; background:#f5f5f5; text-align:center; padding:30px; }
+body { font-family: Arial; background:#f5f5f5; padding:20px; }
 
-.card {
-  width: 700px;
-  height: 340px;
-  margin: 20px auto;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  cursor: pointer;
-  font-size: 18px;
+.header {
+  display:flex; gap:10px; justify-content:center; margin-bottom:20px;
 }
 
-button { margin:5px; padding:10px 15px; border:none; border-radius:6px; cursor:pointer; }
-input { padding:10px; width:300px; border-radius:6px; border:1px solid #ccc; }
+input, select {
+  padding:10px; border-radius:6px; border:1px solid #ccc;
+}
 
-.controls { margin-top:15px; }
+.card {
+  background:white;
+  margin:10px auto;
+  padding:15px;
+  border-radius:8px;
+  width:800px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.15);
+}
+
+.question {
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.answer {
+  display:none;
+  margin-top:10px;
+}
+
+.tag {
+  font-size:12px;
+  background:#007bff;
+  color:white;
+  padding:2px 6px;
+  border-radius:4px;
+  margin-left:10px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>FAQ Quiz Cards</h2>
+<h2 style="text-align:center;">Interview Question Bank</h2>
 
-<input placeholder="Search Angular / BQ..." oninput="search(this.value)" />
+<div class="header">
+  <input placeholder="Search..." oninput="search(this.value)">
+  
+  <select onchange="filterCategory(this.value)">
+    <option value="">All</option>
+    <option value="ANGULAR">Angular</option>
+    <option value="BQ">BQ</option>
+  </select>
 
-<div class="card" onclick="flip()" id="card">Loading...</div>
-
-<div class="controls">
-  <button onclick="prev()">⬅ Prev</button>
-  <button onclick="next()">Next ➡</button>
-  <button onclick="shuffle()">🔁 Shuffle</button>
+  <select onchange="filterMode(this.value)">
+    <option value="">All</option>
+    <option value="fav">⭐ Favorite</option>
+    <option value="unknown">❌ 不熟</option>
+  </select>
 </div>
 
-<div class="controls">
-  <button onclick="toggleFav()">⭐ Favorite</button>
-  <button onclick="mark('known')">✔ 熟</button>
-  <button onclick="mark('unknown')">❌ 不熟</button>
-</div>
-
-<p id="status"></p>
+<div id="list"></div>
 
 <script>
 let originalData = [];
 let data = [];
-let index = 0;
-let flipped = false;
 
-// 👉 本地存储
 let favorites = new Set(JSON.parse(localStorage.getItem('fav') || '[]'));
 let stats = JSON.parse(localStorage.getItem('stats') || '{}');
 
-// 🔥 加载你的 faq.json（唯一数据源）
+// 加载 faq.json（你的唯一数据源） :contentReference[oaicite:0]{index=0}
 fetch('faq.json')
   .then(res => res.json())
   .then(json => {
@@ -76,50 +89,50 @@ fetch('faq.json')
     render();
   });
 
-// 去 HTML 标签
+// 清理HTML
 function cleanHTML(html) {
   return html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 }
 
 // 渲染
 function render() {
-  if (!data.length) return;
+  const container = document.getElementById("list");
+  container.innerHTML = "";
 
-  const card = document.getElementById("card");
-  const cur = data[index];
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "card";
 
-  card.innerText = flipped ? cur.answer : cur.question;
+    div.innerHTML = `
+      <div class="question" onclick="toggle(${item.id})">
+        ▶ ${item.question}
+        <span class="tag">${item.category}</span>
+      </div>
 
-  document.getElementById("status").innerText =
-    `#${index+1}/${data.length} | ⭐ ${favorites.size} | 熟 ${
-      Object.values(stats).filter(v=>v==='known').length
-    } | 不熟 ${
-      Object.values(stats).filter(v=>v==='unknown').length
-    }`;
+      <div class="answer" id="a-${item.id}">
+        ${item.answer}
+        <br><br>
+        <button onclick="toggleFav(${item.id})">
+          ${favorites.has(item.id) ? "⭐ Saved" : "⭐"}
+        </button>
+
+        <button onclick="mark(${item.id}, 'known')">✔ 熟</button>
+        <button onclick="mark(${item.id}, 'unknown')">❌ 不熟</button>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
 }
 
-// 翻转
-function flip() {
-  flipped = !flipped;
-  render();
+// 展开
+function toggle(id) {
+  const el = document.getElementById(`a-${id}`);
+  el.style.display = el.style.display === "block" ? "none" : "block";
 }
 
-// 翻页
-function next() {
-  index = (index + 1) % data.length;
-  flipped = false;
-  render();
-}
-
-function prev() {
-  index = (index - 1 + data.length) % data.length;
-  flipped = false;
-  render();
-}
-
-// ⭐ 收藏
-function toggleFav() {
-  const id = data[index].id;
+// 收藏
+function toggleFav(id) {
   if (favorites.has(id)) favorites.delete(id);
   else favorites.add(id);
 
@@ -127,32 +140,41 @@ function toggleFav() {
   render();
 }
 
-// 📊 标记
-function mark(type) {
-  stats[data[index].id] = type;
+// 标记
+function mark(id, type) {
+  stats[id] = type;
   localStorage.setItem('stats', JSON.stringify(stats));
   render();
 }
 
-// 🔁 随机
-function shuffle() {
-  data = [...data].sort(() => Math.random() - 0.5);
-  index = 0;
-  flipped = false;
+// 搜索
+function search(keyword) {
+  keyword = keyword.toLowerCase();
+  data = originalData.filter(item =>
+    item.question.toLowerCase().includes(keyword)
+  );
   render();
 }
 
-// 🔍 搜索（支持 question + category）
-function search(keyword) {
-  keyword = keyword.toLowerCase();
+// 分类筛选
+function filterCategory(cat) {
+  data = cat
+    ? originalData.filter(item => item.category === cat)
+    : [...originalData];
 
-  data = originalData.filter(item =>
-    item.question.toLowerCase().includes(keyword) ||
-    item.category.toLowerCase().includes(keyword)
-  );
+  render();
+}
 
-  index = 0;
-  flipped = false;
+// 模式筛选
+function filterMode(mode) {
+  if (mode === "fav") {
+    data = originalData.filter(item => favorites.has(item.id));
+  } else if (mode === "unknown") {
+    data = originalData.filter(item => stats[item.id] === "unknown");
+  } else {
+    data = [...originalData];
+  }
+
   render();
 }
 </script>
