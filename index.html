@@ -5,177 +5,540 @@
 <title>Interview Question Bank</title>
 
 <style>
-body { font-family: Arial; background:#f5f5f5; padding:20px; }
-
-.header {
-  display:flex; gap:10px; justify-content:center; margin-bottom:20px;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background:#f3f4f6;
+  padding:20px;
+  margin:0;
+  color:#111827;
 }
 
-input, select {
-  padding:10px; border-radius:6px; border:1px solid #ccc;
+h2 {
+  text-align:center;
+  color:#111827;
+  margin-bottom: 18px;
+}
+
+.controls {
+  max-width: 960px;
+  margin: 0 auto 20px;
+}
+
+.search-bar {
+  display:flex;
+  background:white;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+.search-bar input {
+  flex:1;
+  border: none;
+  outline: none;
+  padding: 14px 22px;
+  font-size: 15px;
+  background: transparent;
+  color:#333;
+}
+.search-bar .icon {
+  background:#6b7280;
+  color:white;
+  width:60px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+
+.button-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  align-items:center;
+}
+
+.btn {
+  padding: 12px 22px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  transition: transform 0.08s, opacity 0.15s;
+  color:white;
+  text-transform: uppercase;
+}
+.btn:hover { opacity: 0.9; }
+.btn:active { transform: translateY(1px); }
+
+.btn-primary { background:#0d6efd; }
+.btn-secondary { background:#6b7280; }
+.btn-teal { background:#14b8a6; }
+
+.btn.active {
+  outline: 3px solid #bfdbfe;
+  outline-offset: 1px;
+}
+
+.category-select {
+  position:relative;
+  display:inline-block;
+}
+.category-select select {
+  appearance:none;
+  -webkit-appearance:none;
+  background:#0d6efd;
+  color:white;
+  padding: 12px 44px 12px 22px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  outline:3px solid #bfdbfe;
+  outline-offset: 1px;
+  text-transform: none;
+}
+.category-select select:focus { outline:3px solid #93c5fd; }
+.category-select::after {
+  content: "▾";
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  color:white;
+  pointer-events:none;
+  font-size: 14px;
+}
+
+.status-select {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background:white;
+  cursor:pointer;
+  font-size: 13px;
+  color:#374151;
+}
+
+.summary {
+  max-width: 960px;
+  margin: 12px auto;
+  color:#4b5563;
+  font-size: 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.mock-banner {
+  max-width: 960px;
+  margin: 12px auto;
+  padding: 12px 18px;
+  background: #ecfeff;
+  border: 1px solid #67e8f9;
+  border-radius: 10px;
+  color: #155e75;
+  font-size: 14px;
+  display:flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items:center;
+  justify-content:center;
+}
+.mock-banner a {
+  color:#0e7490;
+  text-decoration: underline;
+  cursor:pointer;
+  font-weight:600;
 }
 
 .card {
   background:white;
   margin:10px auto;
-  padding:15px;
-  border-radius:8px;
-  width:800px;
-  box-shadow:0 3px 10px rgba(0,0,0,0.15);
+  padding:16px 20px;
+  border-radius:10px;
+  max-width:960px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
 }
+.card + .card { margin-top: 10px; }
 
 .question {
-  font-weight:bold;
+  font-weight:600;
   cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color:#111827;
 }
+.question .arrow {
+  transition: transform 0.15s;
+  color:#6b7280;
+  display:inline-block;
+}
+.question.open .arrow { transform: rotate(90deg); }
+.question .q-text { flex:1; min-width: 200px; }
+
+.tag {
+  font-size:11px;
+  background:#0d6efd;
+  color:white;
+  padding:3px 8px;
+  border-radius:4px;
+  letter-spacing: 0.3px;
+  font-weight: 700;
+}
+.tag.cat-ANGULAR { background:#dd0031; }
+.tag.cat-BQ { background:#0ea5e9; }
+.tag.cat-MERN { background:#22c55e; }
+.tag.cat-JAVA { background:#ea580c; }
+.tag.top { background:#f59e0b; }
 
 .answer {
   display:none;
-  margin-top:10px;
+  margin-top:12px;
+  padding: 12px 0 0;
+  border-top: 1px solid #e5e7eb;
+  color:#1f2937;
+  line-height: 1.6;
+}
+.answer.open { display: block; }
+.answer p { margin: 6px 0; }
+.answer em { font-style: italic; color:#0f172a; }
+
+.action-row {
+  margin-top: 12px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.action-row button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border:1px solid #d1d5db;
+  background:white;
+  cursor:pointer;
+  font-size: 13px;
+  color:#374151;
+}
+.action-row button:hover { background:#f9fafb; }
+.action-row button.on { background:#fef3c7; border-color:#f59e0b; color:#92400e; }
+.action-row button.bad { background:#fee2e2; border-color:#ef4444; color:#991b1b; }
+.action-row button.good { background:#dcfce7; border-color:#22c55e; color:#166534; }
+
+.empty {
+  text-align:center;
+  color:#6b7280;
+  padding: 40px 20px;
+  font-style: italic;
 }
 
-.tag {
-  font-size:12px;
-  background:#007bff;
-  color:white;
-  padding:2px 6px;
-  border-radius:4px;
-  margin-left:10px;
+.intro {
+  max-width: 960px;
+  margin: 0 auto 18px;
+  padding: 14px 18px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  color: #1e3a8a;
+  font-size: 14px;
+  line-height: 1.55;
 }
+.intro b { color:#1d4ed8; }
 </style>
 </head>
 
 <body>
 
-<h2 style="text-align:center;">Interview Question Bank</h2>
+<h2>Interview Question Bank</h2>
 
-<div class="header">
-  <input placeholder="Search..." oninput="search(this.value)">
-  
-  <select onchange="filterCategory(this.value)">
-    <option value="">All</option>
-    <option value="ANGULAR">Angular</option>
-    <option value="BQ">BQ</option>
-  </select>
-
-  <select onchange="filterMode(this.value)">
-    <option value="">All</option>
-    <option value="fav">⭐ Favorite</option>
-    <option value="unknown">❌ 不熟</option>
-  </select>
+<div class="intro">
+  <b>test八股</b> — A searchable FAQ bank for interview prep.
+  Pick a category from the dropdown, or click <b>TOP QUESTIONS</b> to focus on highest-priority items.
+  Use <b>EXPAND ALL</b> to open every answer, or enter <b>MOCK MODE</b> to randomly draw 25 questions
+  from the currently-selected category for a timed practice set. Your ⭐ favorites and ✔/❌ marks are saved locally in your browser.
 </div>
 
+<div class="controls">
+  <div class="search-bar">
+    <input id="search" placeholder="Search by keyword" oninput="applyFilters()">
+    <div class="icon">🔍</div>
+  </div>
+
+  <div class="button-row">
+    <div class="category-select">
+      <select id="category" onchange="onCategoryChange()">
+        <option value="">Select a category</option>
+        <option value="ANGULAR">ANGULAR</option>
+        <option value="BQ">BQ</option>
+        <option value="MERN">MERN</option>
+        <option value="JAVA">JAVA</option>
+      </select>
+    </div>
+
+    <button id="topBtn" class="btn btn-primary" onclick="toggleTop()">Top Questions</button>
+    <button id="expandBtn" class="btn btn-secondary" onclick="toggleExpandAll()">Expand All</button>
+    <button id="mockBtn" class="btn btn-teal" onclick="toggleMockMode()">Mock Mode</button>
+
+    <select id="statusFilter" class="status-select" onchange="applyFilters()">
+      <option value="">All status</option>
+      <option value="fav">⭐ Favorite</option>
+      <option value="known">✔ 熟</option>
+      <option value="unknown">❌ 不熟</option>
+    </select>
+  </div>
+</div>
+
+<div id="mockBanner"></div>
+<div id="summary" class="summary"></div>
 <div id="list"></div>
 
 <script>
+// ---- state ----
 let originalData = [];
-let data = [];
+let viewData = [];
 
 let favorites = new Set(JSON.parse(localStorage.getItem('fav') || '[]'));
 let stats = JSON.parse(localStorage.getItem('stats') || '{}');
 
-// 加载 faq.json（你的唯一数据源） :contentReference[oaicite:0]{index=0}
+let showTopOnly = false;
+let expandAll = false;
+let mockMode = false;
+let mockIds = null;         // Set of 25 random ids
+let mockCategory = null;    // which category the mock was drawn from
+const MOCK_SIZE = 25;
+
+// ---- load data ----
 fetch('faq.json')
   .then(res => res.json())
   .then(json => {
     originalData = json.map(item => ({
       id: item.id,
       question: item.question,
-      answer: cleanHTML(item.answer),
-      category: item.category
+      answer: item.answer || '',
+      category: item.category,
+      keyword: item.keyword,
+      frequency: item.frequency,
+      isTop: !!item.isTop
     }));
-
-    data = [...originalData];
-    render();
+    applyFilters();
+  })
+  .catch(err => {
+    document.getElementById('list').innerHTML =
+      '<div class="empty">Failed to load faq.json: ' + err + '</div>';
   });
 
-// 清理HTML
-function cleanHTML(html) {
-  return html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, c => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+  ));
 }
 
-// 渲染
+// ---- filtering ----
+function computePool(ignoreMock) {
+  const kw = document.getElementById('search').value.trim().toLowerCase();
+  const cat = document.getElementById('category').value;
+  const status = document.getElementById('statusFilter').value;
+
+  let d = [...originalData];
+
+  if (cat) d = d.filter(item => item.category === cat);
+  if (showTopOnly) d = d.filter(item => item.isTop);
+  if (kw) d = d.filter(item =>
+    (item.question && item.question.toLowerCase().includes(kw)) ||
+    (item.answer && item.answer.toLowerCase().includes(kw))
+  );
+  if (status === 'fav') d = d.filter(item => favorites.has(item.id));
+  else if (status === 'unknown') d = d.filter(item => stats[item.id] === 'unknown');
+  else if (status === 'known') d = d.filter(item => stats[item.id] === 'known');
+
+  if (!ignoreMock && mockMode && mockIds) {
+    d = d.filter(item => mockIds.has(item.id));
+  }
+  return d;
+}
+
+function applyFilters() {
+  viewData = computePool(false);
+  render();
+}
+
+// ---- rendering ----
 function render() {
-  const container = document.getElementById("list");
-  container.innerHTML = "";
+  const container = document.getElementById('list');
+  const summary = document.getElementById('summary');
+  const banner = document.getElementById('mockBanner');
 
-  data.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "card";
+  // summary
+  const total = originalData.length;
+  summary.innerHTML = `
+    <span>Showing <b>${viewData.length}</b> of ${total} questions</span>
+    <span>
+      ⭐ ${favorites.size}
+      &nbsp;·&nbsp; ✔ ${Object.values(stats).filter(s => s === 'known').length}
+      &nbsp;·&nbsp; ❌ ${Object.values(stats).filter(s => s === 'unknown').length}
+    </span>
+  `;
 
-    div.innerHTML = `
-      <div class="question" onclick="toggle(${item.id})">
-        ▶ ${item.question}
-        <span class="tag">${item.category}</span>
-      </div>
-
-      <div class="answer" id="a-${item.id}">
-        ${item.answer}
-        <br><br>
-        <button onclick="toggleFav(${item.id})">
-          ${favorites.has(item.id) ? "⭐ Saved" : "⭐"}
-        </button>
-
-        <button onclick="mark(${item.id}, 'known')">✔ 熟</button>
-        <button onclick="mark(${item.id}, 'unknown')">❌ 不熟</button>
+  // mock banner
+  if (mockMode && mockIds) {
+    banner.innerHTML = `
+      <div class="mock-banner">
+        🎯 <b>Mock Mode</b> — ${mockIds.size} random ${mockCategory ? mockCategory + ' ' : ''}questions drawn.
+        <a onclick="reshuffleMock()">Reshuffle</a>
+        <a onclick="exitMockMode()">Exit Mock Mode</a>
       </div>
     `;
+  } else {
+    banner.innerHTML = '';
+  }
 
+  // list
+  container.innerHTML = '';
+  if (viewData.length === 0) {
+    container.innerHTML = '<div class="empty">No questions match your filters.</div>';
+    return;
+  }
+
+  viewData.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    const isFav = favorites.has(item.id);
+    const status = stats[item.id];
+    const open = expandAll;
+
+    div.innerHTML = `
+      <div class="question ${open ? 'open' : ''}" onclick="toggle(${item.id}, this)">
+        <span class="arrow">▶</span>
+        <span class="q-text">${escapeHTML(item.question)}</span>
+        <span class="tag cat-${item.category}">${item.category}</span>
+        ${item.isTop ? '<span class="tag top">★ TOP</span>' : ''}
+      </div>
+      <div class="answer ${open ? 'open' : ''}" id="a-${item.id}" style="display:${open ? 'block' : 'none'}">
+        ${item.answer}
+        <div class="action-row">
+          <button class="${isFav ? 'on' : ''}" onclick="event.stopPropagation(); toggleFav(${item.id})">
+            ${isFav ? '⭐ Saved' : '⭐ Save'}
+          </button>
+          <button class="${status === 'known' ? 'good' : ''}" onclick="event.stopPropagation(); mark(${item.id}, 'known')">✔ 熟</button>
+          <button class="${status === 'unknown' ? 'bad' : ''}" onclick="event.stopPropagation(); mark(${item.id}, 'unknown')">❌ 不熟</button>
+        </div>
+      </div>
+    `;
     container.appendChild(div);
   });
 }
 
-// 展开
-function toggle(id) {
-  const el = document.getElementById(`a-${id}`);
-  el.style.display = el.style.display === "block" ? "none" : "block";
+// ---- interactions ----
+function toggle(id, el) {
+  const a = document.getElementById(`a-${id}`);
+  const isOpen = a.classList.toggle('open');
+  el.classList.toggle('open', isOpen);
+  a.style.display = isOpen ? 'block' : 'none';
 }
 
-// 收藏
 function toggleFav(id) {
   if (favorites.has(id)) favorites.delete(id);
   else favorites.add(id);
-
   localStorage.setItem('fav', JSON.stringify([...favorites]));
   render();
 }
 
-// 标记
 function mark(id, type) {
-  stats[id] = type;
+  if (stats[id] === type) delete stats[id];
+  else stats[id] = type;
   localStorage.setItem('stats', JSON.stringify(stats));
   render();
 }
 
-// 搜索
-function search(keyword) {
-  keyword = keyword.toLowerCase();
-  data = originalData.filter(item =>
-    item.question.toLowerCase().includes(keyword)
-  );
+function toggleTop() {
+  showTopOnly = !showTopOnly;
+  document.getElementById('topBtn').classList.toggle('active', showTopOnly);
+  if (mockMode) exitMockMode(false);
+  applyFilters();
+}
+
+function toggleExpandAll() {
+  expandAll = !expandAll;
+  document.getElementById('expandBtn').textContent = expandAll ? 'Collapse All' : 'Expand All';
   render();
 }
 
-// 分类筛选
-function filterCategory(cat) {
-  data = cat
-    ? originalData.filter(item => item.category === cat)
-    : [...originalData];
-
-  render();
+function onCategoryChange() {
+  // Changing category invalidates the mock draw
+  if (mockMode) exitMockMode(false);
+  applyFilters();
 }
 
-// 模式筛选
-function filterMode(mode) {
-  if (mode === "fav") {
-    data = originalData.filter(item => favorites.has(item.id));
-  } else if (mode === "unknown") {
-    data = originalData.filter(item => stats[item.id] === "unknown");
-  } else {
-    data = [...originalData];
+// ---- Mock Mode ----
+function toggleMockMode() {
+  if (mockMode) exitMockMode();
+  else enterMockMode();
+}
+
+function enterMockMode() {
+  const cat = document.getElementById('category').value;
+  if (!cat) {
+    alert('Please pick a category first — Mock Mode draws 25 random questions from the selected category tag.');
+    return;
   }
 
-  render();
+  // Pool = all questions in the chosen category (ignore other filters so the draw is
+  // truly "25 random from the tag"). We also respect Top Questions if active.
+  let pool = originalData.filter(item => item.category === cat);
+  if (showTopOnly) pool = pool.filter(item => item.isTop);
+
+  if (pool.length === 0) {
+    alert('No questions in this category to draw from.');
+    return;
+  }
+
+  const picked = shuffle(pool).slice(0, Math.min(MOCK_SIZE, pool.length));
+  mockIds = new Set(picked.map(i => i.id));
+  mockCategory = cat;
+  mockMode = true;
+
+  const btn = document.getElementById('mockBtn');
+  btn.classList.add('active');
+  btn.textContent = 'Exit Mock';
+
+  applyFilters();
+}
+
+function exitMockMode(refresh = true) {
+  mockMode = false;
+  mockIds = null;
+  mockCategory = null;
+  const btn = document.getElementById('mockBtn');
+  btn.classList.remove('active');
+  btn.textContent = 'Mock Mode';
+  if (refresh) applyFilters();
+}
+
+function reshuffleMock() {
+  const cat = mockCategory || document.getElementById('category').value;
+  if (!cat) return;
+  let pool = originalData.filter(item => item.category === cat);
+  if (showTopOnly) pool = pool.filter(item => item.isTop);
+  const picked = shuffle(pool).slice(0, Math.min(MOCK_SIZE, pool.length));
+  mockIds = new Set(picked.map(i => i.id));
+  mockCategory = cat;
+  applyFilters();
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 </script>
 
