@@ -417,7 +417,7 @@ function render() {
       <div class="question ${open ? 'open' : ''}" onclick="toggle(${item.id}, this)">
         <span class="arrow">▶</span>
         <span class="q-text">${escapeHTML(item.question)}</span>
-        <span class="tag cat-${item.category}">${item.category}</span>
+        <span class="tag cat-${item.category}" title="${escapeHTML(item.category)}">${escapeHTML(item.keyword || item.category)}</span>
         ${item.isTop ? '<span class="tag top">★ TOP</span>' : ''}
       </div>
       <div class="answer ${open ? 'open' : ''}" id="a-${item.id}" style="display:${open ? 'block' : 'none'}">
